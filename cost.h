@@ -24,30 +24,28 @@ Scalar getMSSIM(Mat i1, Mat i2)
     Mat I1_2   = I1.mul(I1);
     Mat I1_I2  = I1.mul(I2);
 
-    Mat mu1, mu2;
+    Mat mu1, mu2;  // μ
     GaussianBlur(I1, mu1, Size(11, 11), 1.5);
     GaussianBlur(I2, mu2, Size(11, 11), 1.5);
 
-    cout<<I1.size()<<endl;
-    cout<<mu1.size()<<endl;
-
-
-    Mat mu1_2   =   mu1.mul(mu1);
+    Mat mu1_2   =   mu1.mul(mu1);  //  μ^2
     Mat mu2_2   =   mu2.mul(mu2);
     Mat mu1_mu2 =   mu1.mul(mu2);
 
     Mat sigma1_2, sigma2_2, sigma12;
 
-    GaussianBlur(I1_2, sigma1_2, Size(11, 11), 1.5);
-    sigma1_2 -= mu1_2;
+    GaussianBlur(I1_2, sigma1_2, Size(11, 11), 1.5);  // E(X^2)
+    sigma1_2 -= mu1_2;  //D(x) = E(X^2)-E(X)^2
     GaussianBlur(I2_2, sigma2_2, Size(11, 11), 1.5);
     sigma2_2 -= mu2_2;
     GaussianBlur(I1_I2, sigma12, Size(11, 11), 1.5);
-    sigma12 -= mu1_mu2;
+    sigma12 -= mu1_mu2;  // Conv(X,Y) = E(XY)-EXEY
 
 
-    Mat t1, t2, t3;
-
+    //SSIM(x,y) = (2μxμy+C1)（2sigmaxy+C2）/（μx^2+μy^2+C1）(sigmax^2+sigmay^2+C2)
+    
+    Mat t1,t2,t3;
+    
     t1 = 2 * mu1_mu2 + C1;
     t2 = 2 * sigma12 + C2;
     t3 = t1.mul(t2);
